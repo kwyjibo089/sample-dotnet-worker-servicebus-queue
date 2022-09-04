@@ -1,9 +1,10 @@
 # .NET Core worker processing Azure Service Bus Queue scaled by KEDA with connection strings
+
 A simple Docker container written in .NET that will receive messages from a Service Bus queue and scale via KEDA with connection strings.
 
 The message processor will receive a single message at a time (per instance), and sleep for 2 second to simulate performing work. When adding a massive amount of queue messages, KEDA will drive the container to scale out according to the event source (Service Bus Queue).
 
-> 💡 *If you want to learn how to scale this sample with KEDA 1.0, feel free to read about it [here](https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/tree/keda-v1.0).*
+> 💡 _If you want to learn how to scale this sample with KEDA 1.0, feel free to read about it [here](https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/tree/keda-v1.0)._
 
 _The sample can also be ran locally on Docker without KEDA, read our [documentation here](./src/)._
 
@@ -25,12 +26,12 @@ spec:
   # minReplicaCount: 0 Change to define how many minimum replicas you want
   maxReplicaCount: 10
   triggers:
-  - type: azure-servicebus
-    metadata:
-      queueName: orders
-      queueLength: '5'
-    authenticationRef:
-      name: trigger-auth-service-bus-orders
+    - type: azure-servicebus
+      metadata:
+        queueName: orders
+        queueLength: "5"
+      authenticationRef:
+        name: trigger-auth-service-bus-orders
 ```
 
 It defines the type of scale trigger we'd like to use, in our case `azure-servicebus`, and the scaling criteria. For our scenario we'd like to scale out if there are 5 or more messages in the `orders` queue with a maximum of 10 concurrent replicas which is defined via `maxReplicaCount`.
@@ -44,9 +45,9 @@ metadata:
   name: trigger-auth-service-bus-orders
 spec:
   secretTargetRef:
-  - parameter: connection
-    name: secrets-order-management
-    key: servicebus-order-management-connectionstring
+    - parameter: connection
+      name: secrets-order-management
+      key: servicebus-order-management-connectionstring
 ```
 
 In this case, we are telling KEDA to read the `connection` parameter from a Kubernetes secret with the name `secrets-order-management` and pass the value of the entry with key `servicebus-order-management-connectionstring`.
@@ -62,7 +63,7 @@ This allows us to not only re-use this authentication resource but also assign d
 
 ## Setup
 
-This setup will go through creating an Azure Service Bus queue  and deploying this consumer with the `ScaledObject` to scale via KEDA.  If you already have an Azure Service Bus namespace you can use your existing queues.
+This setup will go through creating an Azure Service Bus queue and deploying this consumer with the `ScaledObject` to scale via KEDA. If you already have an Azure Service Bus namespace you can use your existing queues.
 
 ### Creating a new Azure Service Bus namespace & queue
 
@@ -154,7 +155,7 @@ We have our secret configured, defined a `TriggerAuthentication` for KEDA to aut
 Now let's create everything:
 
 ```cli
-❯ kubectl apply -f .\deploy/connection-string/deploy-autoscaling.yaml --namespace keda-dotnet-sample
+❯ kubectl apply -f deploy/connection-string/deploy-autoscaling.yaml --namespace keda-dotnet-sample
 triggerauthentication.keda.sh/trigger-auth-service-bus-orders created
 secret/secrets-order-consumer configured
 scaledobject.keda.sh/order-processor-scaler created
@@ -263,13 +264,12 @@ info: Keda.Samples.Dotnet.OrderProcessor.OrdersQueueProcessor[0]
 
 There is also a web application included in the repository that shows a simple bar chart with the number of messages. The graph refreshes every 2 seconds, giving you a visualization how the queue initially builds up when orders are being sent to the service bus, and then when the autoscaler kicks in the queue will decrease in length quicker and quicker depending on how many replicas that have been created.
 
-
 To build and run the web app locally, add the service bus connection string to appSettings.json and run the web application from Visual Studio.
 
 There is also a docker image available, so you can also run it locally with the following command:
 
 ```cli
-docker run -p 8080:80 -d -e OrderQueue__ConnectionString="KEDA_SERVICEBUS_QUEUE_CONNECTIONSTRING" kedasamples/sample-dotnet-web 
+docker run -p 8080:80 -d -e OrderQueue__ConnectionString="KEDA_SERVICEBUS_QUEUE_CONNECTIONSTRING" kedasamples/sample-dotnet-web
 ```
 
 To deploy the web application to your Kubernetes cluster:
@@ -288,7 +288,7 @@ NAME            TYPE           CLUSTER-IP   EXTERNAL-IP     PORT(S)        AGE
 kedasampleweb   LoadBalancer   10.0.37.60   52.157.87.179   80:30919/TCP   117s
 ```
 
-You'll need to wait a short while until the public IP is created and shown in the output. 
+You'll need to wait a short while until the public IP is created and shown in the output.
 
 ![Visualize message queue](/images/kedaweb.png)
 
