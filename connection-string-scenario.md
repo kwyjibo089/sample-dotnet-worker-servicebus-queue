@@ -275,7 +275,7 @@ docker run -p 8080:80 -d -e OrderQueue__ConnectionString="KEDA_SERVICEBUS_QUEUE_
 To deploy the web application to your Kubernetes cluster:
 
 ```cli
-❯ kubectl apply -f .\deploy\deploy-web.yaml --namespace keda-dotnet-sample
+❯ kubectl apply -f deploy/deploy-web.yaml --namespace keda-dotnet-sample
 deployment.apps/order-web created
 service/kedasampleweb created
 ```
