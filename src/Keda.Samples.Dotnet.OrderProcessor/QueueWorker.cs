@@ -85,7 +85,7 @@ namespace Keda.Samples.Dotnet.OrderProcessor
         {
             try
             {
-                var rawMessageBody = Encoding.UTF8.GetString(processMessageEventArgs.Message.Body.ToBytes().ToArray());
+                var rawMessageBody = Encoding.UTF8.GetString(processMessageEventArgs.Message.Body.ToArray());
                 Logger.LogInformation("Received message {MessageId} with body {MessageBody}",
                     processMessageEventArgs.Message.MessageId, rawMessageBody);
 
